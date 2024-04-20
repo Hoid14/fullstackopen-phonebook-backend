@@ -52,7 +52,15 @@ app.get('/api/persons/:id', (request, response) => {
         // Luego, termina el proceso de respuesta, lo que significa que no se pueden enviar más datos al cliente.
         response.status(404).end()
     }
-    
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    // Este metodo deja solo las personas cuyo id sea diferente al id de request.params.id
+    persons = persons.filter(person => person.id !== id)
+    // Esta línea de código establece el código de estado HTTP de la respuesta a 204, que indica que la solicitud ha sido procesada con éxito pero no hay contenido para devolver.
+    // Luego, termina el proceso de respuesta, lo que significa que no se pueden enviar más datos al cliente.
+    response.status(204).end()
 })
 
 const PORT = 3001
