@@ -25,6 +25,19 @@ let persons = [
     }
 ]
 
+app.get('/info', (request, response) => {
+    // Esta línea de código crea una nueva instancia de la clase Date, que representa la fecha y hora actuales.
+    // Luego, convierte esta instancia de Date a una cadena de texto (string) utilizando el método toString().
+    
+    const time = new Date().toString()
+    response.send(`
+
+    <p>Phonebook has info for ${persons.length} people</p>
+    <p>${time}</p>
+    
+    `)
+})
+
 app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
