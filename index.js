@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
 
 let persons = [
     { 
@@ -61,6 +62,51 @@ app.delete('/api/persons/:id', (request, response) => {
     // Esta línea de código establece el código de estado HTTP de la respuesta a 204, que indica que la solicitud ha sido procesada con éxito pero no hay contenido para devolver.
     // Luego, termina el proceso de respuesta, lo que significa que no se pueden enviar más datos al cliente.
     response.status(204).end()
+})
+
+const getRandomInt = () => {
+    // array de ids
+    const max = 1000
+    const ids = persons.map(person=>person.id)
+    let random = Math.floor(Math.random()*max)
+    while(ids.includes(random)){
+        random = Math.floor(Math.random()*max)
+    }
+    return random
+}
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    if(!body.name && !body.number){
+        // Codigo 400: solicitud incorrecta
+        return response.status(400).json({
+            error: 'name and number missing'
+        })
+    }
+    if(!body.name){
+        // Codigo 400: solicitud incorrecta
+        return response.status(400).json({
+            error: 'name missing'
+        })
+    }
+    if(!body.number){
+        // Codigo 400: solicitud incorrecta
+        return response.status(400).json({
+            error: 'number missing'
+        })
+    }
+    
+
+    const person = {
+        id: getRandomInt(),
+        name: body.name,
+        number: body.number
+    }
+
+    persons = persons.concat(person)
+
+    response.json(person)
 })
 
 const PORT = 3001
