@@ -81,8 +81,6 @@ const checkName = (name) =>{
     return names.includes(name)
 }
 
-console.log(checkName("Sergio"))
-
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
