@@ -75,6 +75,14 @@ const getRandomInt = () => {
     return random
 }
 
+const checkName = (name) =>{
+    const names = persons.map(person => person.name)
+    
+    return names.includes(name)
+}
+
+console.log(checkName("Sergio"))
+
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
@@ -94,6 +102,12 @@ app.post('/api/persons', (request, response) => {
         // Codigo 400: solicitud incorrecta
         return response.status(400).json({
             error: 'number missing'
+        })
+    }
+    if(checkName(body.name)){
+        // Codigo 400: solicitud incorrecta
+        return response.status(400).json({
+            error: 'name must be unique'
         })
     }
     
