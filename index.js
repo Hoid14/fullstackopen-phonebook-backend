@@ -28,7 +28,7 @@ let persons = [
 app.get('/info', (request, response) => {
     // Esta línea de código crea una nueva instancia de la clase Date, que representa la fecha y hora actuales.
     // Luego, convierte esta instancia de Date a una cadena de texto (string) utilizando el método toString().
-    
+
     const time = new Date().toString()
     response.send(`
 
@@ -40,6 +40,19 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
     response.json(persons)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+    if(person){
+        response.json(person)
+    }else{
+        // Esta línea de código establece el código de estado HTTP de la respuesta a 404, que indica que el recurso solicitado no se encontró.
+        // Luego, termina el proceso de respuesta, lo que significa que no se pueden enviar más datos al cliente.
+        response.status(404).end()
+    }
+    
 })
 
 const PORT = 3001
