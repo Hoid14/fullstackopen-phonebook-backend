@@ -1,11 +1,13 @@
 // Importamos el módulo Express, que es un marco de aplicación web para Node.js.
 const express = require('express')
+const morgan = require('morgan')
 
 // Creamos una nueva instancia de una aplicación Express. `app` es un objeto que tiene métodos para rutas y middleware, entre otras cosas.
 const app = express()
 
 // Añadimos el middleware `express.json()` a la pila de middleware de la aplicación. Este middleware analiza los cuerpos de las solicitudes entrantes en un formato JSON, lo que significa que podemos acceder al cuerpo de la solicitud como un objeto JavaScript en nuestros controladores de rutas.
 app.use(express.json())
+app.use(morgan('tiny'))
 
 let persons = [
     { 
