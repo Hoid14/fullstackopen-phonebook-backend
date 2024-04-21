@@ -7,7 +7,19 @@ const app = express()
 
 // Añadimos el middleware `express.json()` a la pila de middleware de la aplicación. Este middleware analiza los cuerpos de las solicitudes entrantes en un formato JSON, lo que significa que podemos acceder al cuerpo de la solicitud como un objeto JavaScript en nuestros controladores de rutas.
 app.use(express.json())
-app.use(morgan('tiny'))
+
+morgan.token('body', (req)=>{
+    if(req.method==='POST'){
+        return JSON.stringify(req.body)
+    }
+    else{
+        return ''
+    }
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+
 
 let persons = [
     { 
@@ -32,10 +44,9 @@ let persons = [
     }
 ]
 
-app.get('/info', (request, response) => {
+app.get('/info', morgan('tiny'), (request, response) => {
     // Esta línea de código crea una nueva instancia de la clase Date, que representa la fecha y hora actuales.
     // Luego, convierte esta instancia de Date a una cadena de texto (string) utilizando el método toString().
-
     const time = new Date().toString()
     response.send(`
 
