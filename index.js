@@ -143,7 +143,9 @@ app.post('/api/persons', (request, response) => {
     response.json(person)
 })
 
-const PORT = 3001
+
+// Ahora estamos usando el puerto definido en la variable de entorno PORT o el puerto 3001 si la variable de entorno PORT no está definida.
+const PORT = process.env.PORT || 3001
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
 })
