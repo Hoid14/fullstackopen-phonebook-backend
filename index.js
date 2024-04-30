@@ -12,6 +12,9 @@ app.use(express.json())
 // Añadimos el middleware para permitir solicitudes de todos los orígenes, por defecto perimite solicitudes de todos los orígenes
 app.use(cors())
 
+// Para que Express muestre contenido estático , la página index.html y JavaScript, etc., necesitamos un middleware integrado de Express llamado static .
+// Cada vez que Express recibe una solicitud HTTP GET, primero verificará si el directorio dist contiene un archivo correspondiente a la dirección de la solicitud. Si se encuentra un archivo correcto, Express lo devolverá.
+app.use(express.static('dist'))
 
 morgan.token('body', (req)=>{
     if(req.method==='POST'){
