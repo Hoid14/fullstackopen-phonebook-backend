@@ -1,7 +1,18 @@
+/*
+Es importante que dotenv se importe antes 
+de importar el modelo de Person. Esto garantiza 
+que las variables de entorno del archivo .env 
+estén disponibles globalmente antes de importar 
+el código de los otros módulos.
+*/
+// Necesario para usar las variables de entorno
+require('dotenv').config()
 // Importamos el módulo Express, que es un marco de aplicación web para Node.js.
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+// Importamos el modelo person, de esta manera la variable Person será asignada al mismo objeto que define el módulo
+const Person = require('./models/person')
 
 // Creamos una nueva instancia de una aplicación Express. `app` es un objeto que tiene métodos para rutas y middleware, entre otras cosas.
 const app = express()
@@ -64,8 +75,13 @@ app.get('/info', morgan('tiny'), (request, response) => {
     `)
 })
 
+//Se hace solicitud GET a la url
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    //Busca todas las personas de la base de datos
+    Person.find({}).then(people =>{
+        //Reponde y muestra en la pagina de la url todas las personas en formato json
+        response.json(people)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -147,8 +163,8 @@ app.post('/api/persons', (request, response) => {
 })
 
 
-// Ahora estamos usando el puerto definido en la variable de entorno PORT o el puerto 3001 si la variable de entorno PORT no está definida.
-const PORT = process.env.PORT || 3001
+// De esta forma se usan las variables de entorno del archivo .env
+const PORT = process.env.PORT
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
 })
