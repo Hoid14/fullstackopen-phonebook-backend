@@ -78,22 +78,20 @@ app.get('/info', morgan('tiny'), (request, response) => {
 //Se hace solicitud GET a la url
 app.get('/api/persons', (request, response) => {
     //Busca todas las personas de la base de datos
-    Person.find({}).then(people =>{
+    Person
+    .find({})
+    .then(people =>{
         //Reponde y muestra en la pagina de la url todas las personas en formato json
         response.json(people)
     })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if(person){
+    Person
+    .findById(request.params.id)
+    .then(person=>{
         response.json(person)
-    }else{
-        // Esta línea de código establece el código de estado HTTP de la respuesta a 404, que indica que el recurso solicitado no se encontró.
-        // Luego, termina el proceso de respuesta, lo que significa que no se pueden enviar más datos al cliente.
-        response.status(404).end()
-    }
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -105,22 +103,22 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-const getRandomInt = () => {
-    // array de ids
-    const max = 1000
-    const ids = persons.map(person=>person.id)
-    let random = Math.floor(Math.random()*max)
-    while(ids.includes(random)){
-        random = Math.floor(Math.random()*max)
-    }
-    return random
-}
+// const getRandomInt = () => {
+//     // array de ids
+//     const max = 1000
+//     const ids = persons.map(person=>person.id)
+//     let random = Math.floor(Math.random()*max)
+//     while(ids.includes(random)){
+//         random = Math.floor(Math.random()*max)
+//     }
+//     return random
+// }
 
-const checkName = (name) =>{
-    const names = persons.map(person => person.name)
+// const checkName = (name) =>{
+//     const names = persons.map(person => person.name)
     
-    return names.includes(name)
-}
+//     return names.includes(name)
+// }
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -143,23 +141,24 @@ app.post('/api/persons', (request, response) => {
             error: 'number missing'
         })
     }
-    if(checkName(body.name)){
-        // Codigo 400: solicitud incorrecta
-        return response.status(400).json({
-            error: 'name must be unique'
-        })
-    }
-    
 
-    const person = {
-        id: getRandomInt(),
+    
+    // if(checkName(body.name)){
+    //     // Codigo 400: solicitud incorrecta
+    //     return response.status(400).json({
+    //         error: 'name must be unique'
+    //     })
+    // }
+
+    //Los objetos de person se crean con la funcion constructora Person (modelo)
+    const person = new Person({
         name: body.name,
         number: body.number
-    }
+    })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+    person.save().then(savedPerson=>{
+        response.json(savedPerson)
+    })
 })
 
 
