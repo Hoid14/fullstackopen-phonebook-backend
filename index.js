@@ -38,6 +38,18 @@ morgan.token('body', (req)=>{
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+// Los controladores de errores de express son middleware que se definen con una función que acepta cuatro parámetros. Nuestro controlador de errores se ve así:
+const errorHandler = (error, request, response, next) =>{
+    console.error(error.message)
+
+    if(error.name === 'CastError'){
+        // 400 = mala solicitud (sintaxis de peticion malformateada)
+        return response.status(400).send({error:'malformatted id'})
+    }
+
+    next(error)
+}
+
 
 
 let persons = [
@@ -76,26 +88,30 @@ app.get('/info', morgan('tiny'), (request, response) => {
 })
 
 //Se hace solicitud GET a la url
-app.get('/api/persons', (request, response) => {
+app.get('/api/people', (request, response) => {
     //Busca todas las personas de la base de datos
-    Person
-    .find({})
+    Person.find({})
     .then(people =>{
         //Reponde y muestra en la pagina de la url todas las personas en formato json
         response.json(people)
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    Person
-    .findById(request.params.id)
+app.get('/api/people/:id', (request, response, next) => {
+    Person.findById(request.params.id)
     .then(person=>{
-        response.json(person)
+        if(person){
+            response.json(person)
+        }
+        else{
+            response.status(404).end()
+        }
     })
+    .catch(error=>next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    //dentro de la request busca el id y se lo pasa al metodo findByIdAndUpdate 
+app.delete('/api/people/:id', (request, response) => {
+    //dentro de la request busca el id y se lo pasa al metodo findByIdAndDelete 
     Person.findByIdAndDelete(request.params.id)
     .then(result=>{
         //204 = sin contenido y finaliza el proceso de respuesta
@@ -122,7 +138,7 @@ app.delete('/api/persons/:id', (request, response) => {
 //     return names.includes(name)
 // }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/people', (request, response) => {
     const body = request.body
 
     if(!body.name && !body.number){
@@ -162,7 +178,9 @@ app.post('/api/persons', (request, response) => {
         response.json(savedPerson)
     })
 })
-
+// El middleware de manejo de errores tiene que ser el último middleware cargado
+// Todas las rutas deben ser registradas antes de este middleware
+app.use(errorHandler)
 
 // De esta forma se usan las variables de entorno del archivo .env
 const PORT = process.env.PORT

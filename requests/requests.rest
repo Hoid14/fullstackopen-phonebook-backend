@@ -1,11 +1,11 @@
-GET http://localhost:3001/api/persons
+GET http://localhost:3001/api/people
 
 ###
-GET http://localhost:3001/api/persons/6637bdec62f1231caa89d190
+GET http://localhost:3001/api/people/6637bdec62f1231caa89d190
 
 ###
 
-POST http://localhost:3001/api/persons
+POST http://localhost:3001/api/people
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3001/api/persons/4
+DELETE http://localhost:3001/api/people/4
 
 
 
