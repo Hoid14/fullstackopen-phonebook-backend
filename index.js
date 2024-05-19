@@ -95,12 +95,14 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    // Este metodo deja solo las personas cuyo id sea diferente al id de request.params.id
-    persons = persons.filter(person => person.id !== id)
-    // Esta línea de código establece el código de estado HTTP de la respuesta a 204, que indica que la solicitud ha sido procesada con éxito pero no hay contenido para devolver.
-    // Luego, termina el proceso de respuesta, lo que significa que no se pueden enviar más datos al cliente.
-    response.status(204).end()
+    //dentro de la request busca el id y se lo pasa al metodo findByIdAndUpdate 
+    Person.findByIdAndDelete(request.params.id)
+    .then(result=>{
+        //204 = sin contenido y finaliza el proceso de respuesta
+        response.status(204).end()
+    })
+    
+
 })
 
 // const getRandomInt = () => {
