@@ -178,6 +178,20 @@ app.post('/api/people', (request, response) => {
         response.json(savedPerson)
     })
 })
+
+app.put('/api/people/:id', (request, response) =>{
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number,
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    .then(updatedNote =>{
+        response.json(updatedNote)
+    })
+})
 // El middleware de manejo de errores tiene que ser el último middleware cargado
 // Todas las rutas deben ser registradas antes de este middleware
 app.use(errorHandler)
