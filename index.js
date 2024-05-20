@@ -75,13 +75,15 @@ let persons = [
     }
 ]
 
-app.get('/info', morgan('tiny'), (request, response) => {
+app.get('/info', morgan('tiny'), async (request, response) => {
     // Esta línea de código crea una nueva instancia de la clase Date, que representa la fecha y hora actuales.
     // Luego, convierte esta instancia de Date a una cadena de texto (string) utilizando el método toString().
     const time = new Date().toString()
+
+    const count = await Person.countDocuments()
     response.send(`
 
-    <p>Phonebook has info for ${persons.length} people</p>
+    <p>Phonebook has info for ${count} people</p>
     <p>${time}</p>
     
     `)
