@@ -46,34 +46,13 @@ const errorHandler = (error, request, response, next) =>{
         // 400 = mala solicitud (sintaxis de peticion malformateada)
         return response.status(400).send({error:'malformatted id'})
     }
+    else if (error.name === 'ValidationError'){
+        return response.status(400).send({error: error.message})
+    }
 
     next(error)
 }
 
-
-
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
 
 app.get('/info', morgan('tiny'), async (request, response) => {
     // Esta línea de código crea una nueva instancia de la clase Date, que representa la fecha y hora actuales.
@@ -123,24 +102,8 @@ app.delete('/api/people/:id', (request, response) => {
 
 })
 
-// const getRandomInt = () => {
-//     // array de ids
-//     const max = 1000
-//     const ids = persons.map(person=>person.id)
-//     let random = Math.floor(Math.random()*max)
-//     while(ids.includes(random)){
-//         random = Math.floor(Math.random()*max)
-//     }
-//     return random
-// }
 
-// const checkName = (name) =>{
-//     const names = persons.map(person => person.name)
-    
-//     return names.includes(name)
-// }
-
-app.post('/api/people', (request, response) => {
+app.post('/api/people', (request, response, next) => {
     const body = request.body
 
     if(!body.name && !body.number){
@@ -162,37 +125,35 @@ app.post('/api/people', (request, response) => {
         })
     }
 
-    
-    // if(checkName(body.name)){
-    //     // Codigo 400: solicitud incorrecta
-    //     return response.status(400).json({
-    //         error: 'name must be unique'
-    //     })
-    // }
-
     //Los objetos de person se crean con la funcion constructora Person (modelo)
     const person = new Person({
         name: body.name,
         number: body.number
     })
 
-    person.save().then(savedPerson=>{
+    person
+    .save()
+    .then(savedPerson=>{
         response.json(savedPerson)
+    })
+    .catch(error=>{
+        next(error)
     })
 })
 
-app.put('/api/people/:id', (request, response) =>{
-    const body = request.body
+app.put('/api/people/:id', (request, response,next) =>{
+    const {name, number}= request.body
 
-    const person = {
-        name: body.name,
-        number: body.number,
-    }
-
-    Person.findByIdAndUpdate(request.params.id, person, {new: true})
-    .then(updatedNote =>{
-        response.json(updatedNote)
-    })
+    Person.findByIdAndUpdate(
+        request.params.id, {name, number}, 
+        {new: true, runValidators: true, context: 'query'})
+        .then(updatedNote =>{
+            response.json(updatedNote)
+        })
+        .catch(error => {
+            console.log("name",error.name)
+            next(error)
+        })
 })
 // El middleware de manejo de errores tiene que ser el último middleware cargado
 // Todas las rutas deben ser registradas antes de este middleware

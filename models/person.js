@@ -18,8 +18,15 @@ mongoose.connect(url)
 
 // El schema le dice a la base de datos la estructura de los datos
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
+    number: {
+        type:String,
+        required: true
+    },
 })
 
 personSchema.set('toJSON', {
