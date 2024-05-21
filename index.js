@@ -118,7 +118,6 @@ app.post('/api/people', (request, response, next) => {
             error: 'name missing'
         })
     }
-    
     if(!body.number){
         // Codigo 400: solicitud incorrecta
         return response.status(400).json({
