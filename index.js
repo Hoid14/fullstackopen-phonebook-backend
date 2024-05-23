@@ -1,8 +1,8 @@
 /*
-Es importante que dotenv se importe antes 
-de importar el modelo de Person. Esto garantiza 
-que las variables de entorno del archivo .env 
-estén disponibles globalmente antes de importar 
+Es importante que dotenv se importe antes
+de importar el modelo de Person. Esto garantiza
+que las variables de entorno del archivo .env
+estén disponibles globalmente antes de importar
 el código de los otros módulos.
 */
 // Necesario para usar las variables de entorno
@@ -27,7 +27,7 @@ app.use(cors())
 // Cada vez que Express recibe una solicitud HTTP GET, primero verificará si el directorio dist contiene un archivo correspondiente a la dirección de la solicitud. Si se encuentra un archivo correcto, Express lo devolverá.
 app.use(express.static('dist'))
 
-morgan.token('body', (req)=>{
+morgan.token('body', (req) => {
     if(req.method==='POST'){
         return JSON.stringify(req.body)
     }
@@ -39,15 +39,15 @@ morgan.token('body', (req)=>{
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 // Los controladores de errores de express son middleware que se definen con una función que acepta cuatro parámetros. Nuestro controlador de errores se ve así:
-const errorHandler = (error, request, response, next) =>{
+const errorHandler = (error, request, response, next) => {
     console.error(error.message)
 
     if(error.name === 'CastError'){
         // 400 = mala solicitud (sintaxis de peticion malformateada)
-        return response.status(400).send({error:'malformatted id'})
+        return response.status(400).send({ error:'malformatted id' })
     }
     else if (error.name === 'ValidationError'){
-        return response.status(400).send({error: error.message})
+        return response.status(400).send({ error: error.message })
     }
 
     next(error)
@@ -72,34 +72,32 @@ app.get('/info', morgan('tiny'), async (request, response) => {
 app.get('/api/people', (request, response) => {
     //Busca todas las personas de la base de datos
     Person.find({})
-    .then(people =>{
+        .then(people => {
         //Reponde y muestra en la pagina de la url todas las personas en formato json
-        response.json(people)
-    })
+            response.json(people)
+        })
 })
 
 app.get('/api/people/:id', (request, response, next) => {
     Person.findById(request.params.id)
-    .then(person=>{
-        if(person){
-            response.json(person)
-        }
-        else{
-            response.status(404).end()
-        }
-    })
-    .catch(error=>next(error))
+        .then(person => {
+            if(person){
+                response.json(person)
+            }
+            else{
+                response.status(404).end()
+            }
+        })
+        .catch(error => next(error))
 })
 
 app.delete('/api/people/:id', (request, response) => {
-    //dentro de la request busca el id y se lo pasa al metodo findByIdAndDelete 
+    //dentro de la request busca el id y se lo pasa al metodo findByIdAndDelete
     Person.findByIdAndDelete(request.params.id)
-    .then(result=>{
-        //204 = sin contenido y finaliza el proceso de respuesta
-        response.status(204).end()
-    })
-    
-
+        .then(() => {
+            //204 = sin contenido y finaliza el proceso de respuesta
+            response.status(204).end()
+        })
 })
 
 
@@ -132,26 +130,26 @@ app.post('/api/people', (request, response, next) => {
     })
 
     person
-    .save()
-    .then(savedPerson=>{
-        response.json(savedPerson)
-    })
-    .catch(error=>{
-        next(error)
-    })
+        .save()
+        .then(savedPerson => {
+            response.json(savedPerson)
+        })
+        .catch(error => {
+            next(error)
+        })
 })
 
-app.put('/api/people/:id', (request, response,next) =>{
-    const {name, number}= request.body
+app.put('/api/people/:id', (request, response,next) => {
+    const { name, number }= request.body
 
     Person.findByIdAndUpdate(
-        request.params.id, {name, number}, 
-        {new: true, runValidators: true, context: 'query'})
-        .then(updatedNote =>{
+        request.params.id, { name, number },
+        { new: true, runValidators: true, context: 'query' })
+        .then(updatedNote => {
             response.json(updatedNote)
         })
         .catch(error => {
-            console.log("name",error.name)
+            console.log('name',error.name)
             next(error)
         })
 })
@@ -161,6 +159,6 @@ app.use(errorHandler)
 
 // De esta forma se usan las variables de entorno del archivo .env
 const PORT = process.env.PORT
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
